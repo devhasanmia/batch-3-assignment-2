@@ -29,22 +29,14 @@ const createProduct = async (req: Request, res: Response) => {
 
 const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const searchQuery = ((req.query.searchTerm as string) || "").toLowerCase();
-    let products = await ProductService.getAllProduct();
-
-    if (searchQuery) {
-      products = products.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery)
-      );
-    }
-    
+    const searchQuery = (req.query.searchTerm as string).toLowerCase();
+    let products = await ProductService.getAllProducts(searchQuery);
     if (products.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No products found",
       });
     }
-
     res.status(200).json({
       success: true,
       message: "Products fetched successfully!",
