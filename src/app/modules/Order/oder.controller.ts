@@ -3,12 +3,12 @@ import { OrderValidationSchema } from "./order.validation";
 import { OrderService } from "./order.service";
 import { z } from "zod";
 
-// Adjust the import according to your project structure
 
 const createOrder = async (req: Request, res: Response) => {
   try {
     const order = req.body;
     const validateData = OrderValidationSchema.create.parse(order);
+    
     const data = await OrderService.createOrder(validateData);
     res.status(200).json({
       success: true,

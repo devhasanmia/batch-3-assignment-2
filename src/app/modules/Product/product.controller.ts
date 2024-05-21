@@ -31,7 +31,7 @@ const getAllProducts = async (req: Request, res: Response) => {
   try {
     const searchQuery = req.query.searchTerm as string;
     let products = await ProductService.getAllProduct(searchQuery);
-    
+
     if (products.length === 0) {
       return res.status(404).json({
         success: false,
@@ -92,7 +92,7 @@ const updateProductById = async (req: Request, res: Response) => {
     } else {
       res.status(500).json({
         success: false,
-        message: "sdfs",
+        message: error.message,
       });
     }
   }

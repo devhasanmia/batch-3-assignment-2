@@ -12,15 +12,22 @@ const createOrder = async (orderData: TOrder) => {
     if (!product) {
       throw new Error(`Product not found`);
     }
+    
     if (product.inventory.quantity < orderData.quantity) {
       throw new Error(`Insufficient quantity available in inventory`);
     }
+
+    if (product.price !== orderData.price) {
+      throw new Error(`Product price does not match order price`);
+    }
+
     const order = await Order.create(orderData);
     await Product.findByIdAndUpdate(orderData.productId, {
       $inc: {
         "inventory.quantity": -orderData.quantity,
       },
     });
+
     return order;
   } catch (error: any) {
     throw new Error(`${error.message || error.toString()}`);
