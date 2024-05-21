@@ -45,9 +45,25 @@ const getProductByIdAndUpdate = async (productId: string, data: UpdateTProduct) 
   }
 };
 
+const deleteProductById = async (productId: string) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      throw new Error(`Invalid product ID`);
+    }
+    const product = await Product.findByIdAndDelete(productId);
+    if (!product) {
+      throw new Error(`Product Not Found`);
+    }
+    return product;
+  } catch (error: any) {
+    throw new Error(`${error.message || error.toString()}`);
+  }
+}
+
 export const ProductService = {
   createProductIntoDB,
   getAllProduct,
   getProductById,
   getProductByIdAndUpdate,
+  deleteProductById
 };
