@@ -29,9 +29,16 @@ const createProduct = async (req: Request, res: Response) => {
 
 const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const products = await ProductService.getAllProduct();
+    const searchQuery = ((req.query.searchTerm as string) || "").toLowerCase();
+    let products = await ProductService.getAllProduct();
 
-    if (products.length <= 0) {
+    if (searchQuery) {
+      products = products.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery)
+      );
+    }
+    
+    if (products.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No products found",
@@ -44,9 +51,11 @@ const getAllProducts = async (req: Request, res: Response) => {
       data: products,
     });
   } catch (error: any) {
+    console.error("Error fetching products:", error);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "An error occurred while fetching products.",
+      error: error.message,
     });
   }
 };
@@ -119,5 +128,5 @@ export const ProductController = {
   getAllProducts,
   getProductById,
   updateProductById,
-  deleteProductById
+  deleteProductById,
 };
