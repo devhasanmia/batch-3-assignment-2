@@ -21,8 +21,8 @@ const ProductValidation = object({
     .positive("Price must be a positive number")
     .min(0.01, { message: "Price must be greater than 0" }),
   category: string().min(1, { message: "Category must not be empty" }),
-  tags: array(string()),
-  variants: array(VariantValidation),
+  tags: array(string().min(1, { message: "Tags must not be empty" })),
+  variants: array(VariantValidation).min(1, {message: "Variants must not be empty" }),
   inventory: InventoryValidation,
 });
 

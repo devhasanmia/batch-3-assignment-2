@@ -3,7 +3,6 @@ import { TProduct, UpdateTProduct } from "./product.interface";
 import Product from "./product.model";
 
 const createProductIntoDB = async (data: TProduct) => {
-
   const product = await Product.create(data);
   return product;
 };
