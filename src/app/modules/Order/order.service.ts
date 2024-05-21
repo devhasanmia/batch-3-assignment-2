@@ -12,7 +12,7 @@ const createOrder = async (orderData: TOrder) => {
     if (!product) {
       throw new Error(`Product not found`);
     }
-    
+
     if (product.inventory.quantity < orderData.quantity) {
       throw new Error(`Insufficient quantity available in inventory`);
     }
@@ -34,6 +34,24 @@ const createOrder = async (orderData: TOrder) => {
   }
 };
 
+const getAllOrders = async (email?: string) => {
+  try {
+    let orders;
+    if (email) {
+      orders = await Order.find({ email });
+      if (orders.length === 0) {
+        throw new Error(`Order not found`);
+      }
+    } else {
+      orders = await Order.find();
+    }
+    return orders;
+  } catch (error: any) {
+    throw new Error(`${error.message || error.toString()}`);
+  }
+};
+
 export const OrderService = {
   createOrder,
+  getAllOrders,
 };
