@@ -17,3 +17,13 @@ export type TProduct = {
   variants: TVariant[];
   inventory: TInventory;
 };
+
+export type UpdateTProduct = {
+  name?: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  tags?: string[];
+  variants?: TVariant[];
+  inventory?: TInventory;
+};
