@@ -3,23 +3,21 @@ import { TProduct, UpdateTProduct } from "./product.interface";
 import Product from "./product.model";
 
 const createProductIntoDB = async (data: TProduct) => {
+
   const product = await Product.create(data);
   return product;
 };
 
-const getAllProducts = async (searchTerm: string) => {
-  try {
-    const products = await Product.find({
-      $or: [
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { description: { $regex: searchTerm, $options: 'i' } },
-        { category: { $regex: searchTerm, $options: 'i' } }
-      ]
-    }).exec();
-    return products;
-  } catch (error: any) {
-    throw new Error(`${error.message || error.toString()}`);
-  }
+const getAllProduct = async (searchTerm: string) => {
+  const product = await Product.find({
+    $or: [
+      {name: new RegExp(searchTerm, "i")},
+      {description: new RegExp(searchTerm, "i")},
+      {category: new RegExp(searchTerm, "i")},
+      {tags: new RegExp(searchTerm, "i")}
+    ]
+  });
+  return product;
 };
 
 const getProductById = async (productId: string) => {
@@ -37,10 +35,7 @@ const getProductById = async (productId: string) => {
   }
 };
 
-const getProductByIdAndUpdate = async (
-  productId: string,
-  data: UpdateTProduct
-) => {
+const getProductByIdAndUpdate = async (productId: string, data: UpdateTProduct) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       throw new Error(`Invalid product ID`);
@@ -70,12 +65,12 @@ const deleteProductById = async (productId: string) => {
   } catch (error: any) {
     throw new Error(`${error.message || error.toString()}`);
   }
-};
+}
 
 export const ProductService = {
   createProductIntoDB,
-  getAllProducts,
+  getAllProduct,
   getProductById,
   getProductByIdAndUpdate,
-  deleteProductById,
+  deleteProductById
 };

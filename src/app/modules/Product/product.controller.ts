@@ -29,8 +29,9 @@ const createProduct = async (req: Request, res: Response) => {
 
 const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const searchQuery = (req.query.searchTerm as string).toLowerCase();
-    let products = await ProductService.getAllProducts(searchQuery);
+    const searchQuery = req.query.searchTerm as string;
+    let products = await ProductService.getAllProduct(searchQuery);
+    
     if (products.length === 0) {
       return res.status(404).json({
         success: false,
@@ -43,7 +44,6 @@ const getAllProducts = async (req: Request, res: Response) => {
       data: products,
     });
   } catch (error: any) {
-    console.error("Error fetching products:", error);
     res.status(500).json({
       success: false,
       message: "An error occurred while fetching products.",
