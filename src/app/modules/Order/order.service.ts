@@ -1,14 +1,16 @@
-import mongoose from "mongoose";
 import Product from "../Product/product.model";
 import { TOrder } from "./order.interface";
 import Order from "./order.model";
+import { idValidityCheck } from "../../utils/idValidityCheck";
+import { catchError } from "../../utils/catchError";
+import { OrderValidationSchema } from "./order.validation";
+import { handleError } from "../../utils/handleError";
+import { z } from "zod";
 
 const createOrder = async (orderData: TOrder) => {
   try {
+    idValidityCheck(orderData.productId);
     const product = await Product.findById(orderData.productId);
-    if (!mongoose.Types.ObjectId.isValid(orderData.productId)) {
-      throw new Error(`Invalid product ID`);
-    }
     if (!product) {
       throw new Error(`Product not found`);
     }
@@ -26,7 +28,7 @@ const createOrder = async (orderData: TOrder) => {
 
     return order;
   } catch (error: any) {
-    throw new Error(`${error.message || error.toString()}`);
+    catchError(error)
   }
 };
 
@@ -43,7 +45,7 @@ const getAllOrders = async (email?: string) => {
     }
     return orders;
   } catch (error: any) {
-    throw new Error(`${error.message || error.toString()}`);
+    catchError(error)
   }
 };
 
