@@ -1,75 +1,88 @@
-import mongoose from "mongoose";
 import { TProduct, UpdateTProduct } from "./product.interface";
 import Product from "./product.model";
+import { catchError } from "../../utils/catchError";
+import { idValidityCheck } from "../../utils/idValidityCheck";
 
-const createProductIntoDB = async (data: TProduct) => {
-  const product = await Product.create(data);
-  return product;
+const createProductIntoDB = async (validatedProductData: TProduct) => {
+  try {
+    const product = await Product.create(validatedProductData);
+    return product;
+  } catch (error: any) {
+    catchError(error);
+  }
 };
 
 const getAllProduct = async (searchTerm: string) => {
-  const product = await Product.find({
-    $or: [
-      {name: new RegExp(searchTerm, "i")},
-      {description: new RegExp(searchTerm, "i")},
-      {category: new RegExp(searchTerm, "i")},
-      {tags: new RegExp(searchTerm, "i")}
-    ]
-  });
-  return product;
+  try {
+    const product = await Product.find({
+      $or: [
+        { name: new RegExp(searchTerm, "i") },
+        { description: new RegExp(searchTerm, "i") },
+        { category: new RegExp(searchTerm, "i") },
+        { tags: new RegExp(searchTerm, "i") },
+      ],
+    });
+    if (product.length === 0) {
+      throw new Error(`No products found`);
+    }
+    return product;
+  } catch (error) {
+    catchError(error);
+  }
 };
 
 const getProductById = async (productId: string) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      throw new Error(`Invalid product ID`);
-    }
+    idValidityCheck(productId);
     const product = await Product.findById(productId);
     if (!product) {
       throw new Error(`Product Not Found`);
     }
     return product;
   } catch (error: any) {
-    throw new Error(`${error.message || error.toString()}`);
+    catchError(error);
   }
 };
 
-const getProductByIdAndUpdate = async (productId: string, data: UpdateTProduct) => {
+const updateProductById = async (
+  productId: string,
+  updateValidateData: UpdateTProduct
+) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      throw new Error(`Invalid product ID`);
-    }
-    const product = await Product.findByIdAndUpdate(productId, data, {
-      new: true,
-    });
+    idValidityCheck(productId);
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      updateValidateData,
+      {
+        new: true,
+      }
+    );
     if (!product) {
       throw new Error(`Product Not Found`);
     }
     return product;
   } catch (error: any) {
-    throw new Error(`${error.message || error.toString()}`);
+    catchError(error);
   }
 };
 
 const deleteProductById = async (productId: string) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      throw new Error(`Invalid product ID`);
-    }
+    idValidityCheck(productId);
     const product = await Product.findByIdAndDelete(productId);
     if (!product) {
       throw new Error(`Product Not Found`);
     }
-    return product;
+    return null;
   } catch (error: any) {
-    throw new Error(`${error.message || error.toString()}`);
+    catchError(error)
   }
-}
+};
 
 export const ProductService = {
   createProductIntoDB,
   getAllProduct,
   getProductById,
-  getProductByIdAndUpdate,
-  deleteProductById
+  updateProductById,
+  deleteProductById,
 };
