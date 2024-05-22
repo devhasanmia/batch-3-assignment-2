@@ -3,10 +3,6 @@ import { TOrder } from "./order.interface";
 import Order from "./order.model";
 import { idValidityCheck } from "../../utils/idValidityCheck";
 import { catchError } from "../../utils/catchError";
-import { OrderValidationSchema } from "./order.validation";
-import { handleError } from "../../utils/handleError";
-import { z } from "zod";
-
 const createOrder = async (orderData: TOrder) => {
   try {
     idValidityCheck(orderData.productId);
@@ -28,7 +24,7 @@ const createOrder = async (orderData: TOrder) => {
 
     return order;
   } catch (error: any) {
-    catchError(error)
+    catchError(error);
   }
 };
 
@@ -40,10 +36,19 @@ const getAllOrders = async (email?: string) => {
       if (orders.length === 0) {
         throw new Error(`Order not found`);
       }
+      return {
+        success: true,
+        message: "Orders fetched successfully for user email!",
+        data: orders
+      };
     } else {
       orders = await Order.find();
+      return {
+        success: true,
+        message: "Orders fetched successfully!",
+        data: orders
+      };
     }
-    return orders;
   } catch (error: any) {
     catchError(error)
   }

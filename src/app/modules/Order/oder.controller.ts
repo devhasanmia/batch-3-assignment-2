@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { OrderService } from "./order.service";
 import { handleError } from "../../utils/handleError";
 import { validateOrderData } from "./validate.OrderData";
-import { OrderValidationSchema } from "./order.validation";
 
 const createOrder = async (req: Request, res: Response) => {
   try {
@@ -22,13 +21,8 @@ const createOrder = async (req: Request, res: Response) => {
 const getAllOrders = async (req: Request, res: Response) => {
   try {
     const email = req.query.email as string;
-    const validaEmail = OrderValidationSchema.emailValidator.parse(email);
-    const orders = await OrderService.getAllOrders(validaEmail);
-    res.status(200).json({
-      success: true,
-      message: "Orders fetched successfully for user email!",
-      data: orders,
-    });
+    const orders = await OrderService.getAllOrders(email);
+    res.status(200).json(orders);
   } catch (error: any) {
     handleError(res, error);
   }
